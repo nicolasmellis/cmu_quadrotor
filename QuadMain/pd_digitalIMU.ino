@@ -171,11 +171,11 @@ void setup()
   throttle_personality = 0;
   personalityEnable = 0;
   
-//  if (!gyro.init())
-//  {
-//    Serial.println("Failed to autodetect gyro type!");
- //   while (1);
-//  }
+  //  if (!gyro.init())
+  //  {
+  //    Serial.println("Failed to autodetect gyro type!");
+  //   while (1);
+  //  }
   
   //compass.init();
   //compass.enableDefault();
@@ -185,8 +185,8 @@ void setup()
 void loop()
 {
   /*
-  delay(400000); //4Sec
-  for(int i = 0; i < 100; i++){
+    delay(400000); //4Sec
+    for(int i = 0; i < 100; i++){
     analogWrite(3, 100); // LEFT;
     analogWrite(5, 100); // LEFT;
     analogWrite(6, 100); // LEFT;
@@ -207,11 +207,11 @@ void loop()
     analogWrite(6, 0); // LEFT
     analogWrite(11, 0); // LEFT
     delay(200000);
-  }
-  while(true)
-  {
+    }
+    while(true)
+    {
     delay(200000000); 
-  }
+    }
   */
   signed int a_roll = 0;
   signed int a_pitch = 0;
@@ -305,18 +305,18 @@ void loop()
   angle_roll += (1.0 - AA) * (float) a_roll * A_GAIN;
   roll_error = (float) (roll_command - 127) / 127.0 * MAX_ANGLE;// - angle_roll;
 
-/*
-  Serial.print("rate_pitch: ");
-  Serial.print(rate_pitch);
-  Serial.print(" rate_roll: ");
-  Serial.print(rate_roll);
-  Serial.print(" rate_yaw: ");
-  Serial.println(rate_yaw);
-  Serial.print("pitch_error: ");
-  Serial.print(pitch_error);
-  Serial.print(" roll_error: ");
-  Serial.println(roll_error);
- */ 
+  /*
+    Serial.print("rate_pitch: ");
+    Serial.print(rate_pitch);
+    Serial.print(" rate_roll: ");
+    Serial.print(rate_roll);
+    Serial.print(" rate_yaw: ");
+    Serial.println(rate_yaw);
+    Serial.print("pitch_error: ");
+    Serial.print(pitch_error);
+    Serial.print(" roll_error: ");
+    Serial.println(roll_error);
+  */ 
   
   // Control
   
@@ -342,14 +342,14 @@ void loop()
   // END OF + MODE
   
   /*
-  Serial.print("LeftF: ");
-  Serial.print(left_command_f);
-  Serial.print(" FrontF: ");
-  Serial.print(front_command_f);
-  Serial.print(" RightF: ");
-  Serial.print(right_command_f);
-  Serial.print(" RearF: ");
-  Serial.println(rear_command_f);
+    Serial.print("LeftF: ");
+    Serial.print(left_command_f);
+    Serial.print(" FrontF: ");
+    Serial.print(front_command_f);
+    Serial.print(" RightF: ");
+    Serial.print(right_command_f);
+    Serial.print(" RearF: ");
+    Serial.println(rear_command_f);
   */
   
   
@@ -360,22 +360,18 @@ void loop()
     left_command = (signed int) left_command_f + throttle_command;
     right_command = (signed int) right_command_f + throttle_command; 
    
-   //  right_command = (38 * right_command) >> 5;
-    
-    if(front_command > 255) { front_command = 255; }
-    if(front_command < 0) { front_command = 0; }
-    if(rear_command > 255) { rear_command = 255; }
-    if(rear_command < 0) { rear_command = 0; }
-    if(left_command > 255) { left_command = 255; }
-    if(left_command < 0) { left_command = 0; }
-    if(right_command > 255) { right_command = 255; }
-    if(right_command < 0) { right_command = 0; }
-/*
-    front_command = SQRT_LUT[front_command];
-    rear_command = SQRT_LUT[rear_command];
-    left_command = SQRT_LUT[left_command];
-    right_command = SQRT_LUT[right_command];
-  */  
+    //  right_command = (38 * right_command) >> 5;
+
+    front_command = constrain(front_command, 0, 255);
+    rear_command = constrain(rear_command, 0, 255);
+    left_command = constrain(left_command, 0, 255);
+    right_command = constrain(right_command, 0, 255);
+
+    /*  front_command = SQRT_LUT[front_command];
+        rear_command = SQRT_LUT[rear_command];
+        left_command = SQRT_LUT[left_command];
+        right_command = SQRT_LUT[right_command];
+    */  
     
     //Change 200 to higher values to allow fine tuning!
     front_command = front_command - front_command * (double)((pitchBias-127)/200.0 + pitchStartBias);
@@ -383,15 +379,12 @@ void loop()
     
     right_command = right_command - right_command * (double)((rollBias-127)/200.0 + rollStartBias); 
     left_command = left_command + left_command * (double)((rollBias-127)/200.0 + rollStartBias);
-  
-    if(front_command < V_MIN) { front_command = V_MIN; }
-    if(front_command > V_MAX) { front_command = V_MAX; }
-    if(rear_command < V_MIN) { rear_command = V_MIN; }
-    if(rear_command > V_MAX) { rear_command = V_MAX; }
-    if(left_command < V_MIN) { left_command = V_MIN; }
-    if(left_command > V_MAX) { left_command = V_MAX; }
-    if(right_command < V_MIN) { right_command = V_MIN; }
-    if(right_command > V_MAX) { right_command = V_MAX; }
+
+    
+    front_command = constrain(front_command, V_MIN, V_MAX);
+    rear_command = constrain(rear_command, V_MIN, V_MAX);
+    left_command = constrain(left_command, V_MIN, V_MAX);
+    right_command = constrain(right_command, V_MIN, V_MAX);
   }
   else
   {
@@ -399,8 +392,8 @@ void loop()
     roll_error_int = 0.0;
   }
   /*
-  if(special == 56)
-  {
+    if(special == 56)
+    {
     analogWrite(3, V_MAX);
     analogWrite(6, V_MIN);
     delay(24000);
@@ -408,21 +401,21 @@ void loop()
     analogWrite(6, V_MAX);
     delay(13000);
     special == 0;
-  }
+    }
   */
   
   if(personalityEnable){
    
-   readPersonality(); 
+    readPersonality(); 
     
-   left_command = 127-roll_personality + throttle_personality; //+Throttle on all
-   right_command = 127+roll_personality + throttle_personality;
-   front_command = 127+pitch_personality + throttle_personality;
-   rear_command = 127-pitch_personality + throttle_personality; 
-   throttle_command = 127 + throttle_personality + throttle_personality; 
-   //Make sure none exceed VMax (and set to 0 those below VMin?)
+    left_command = 127-roll_personality + throttle_personality; //+Throttle on all
+    right_command = 127+roll_personality + throttle_personality;
+    front_command = 127+pitch_personality + throttle_personality;
+    rear_command = 127-pitch_personality + throttle_personality; 
+    throttle_command = 127 + throttle_personality + throttle_personality; 
+    //Make sure none exceed VMax (and set to 0 those below VMin?)
    
-   if(front_command < V_MIN) { front_command = V_MIN; }
+    if(front_command < V_MIN) { front_command = V_MIN; }
     if(front_command > V_MAX) { front_command = V_MAX; }
     if(rear_command < V_MIN) { rear_command = V_MIN; }
     if(rear_command > V_MAX) { rear_command = V_MAX; }
@@ -442,15 +435,15 @@ void loop()
   
   
   /*
-  Serial.print("Left: ");
-  Serial.print(left_command);
-  Serial.print(" Front: ");
-  Serial.print(front_command);
-  Serial.print(" Right: ");
-  Serial.print(right_command);
-  Serial.print(" Rear: ");
-  Serial.println(rear_command);
- */
+    Serial.print("Left: ");
+    Serial.print(left_command);
+    Serial.print(" Front: ");
+    Serial.print(front_command);
+    Serial.print(" Right: ");
+    Serial.print(right_command);
+    Serial.print(" Rear: ");
+    Serial.println(rear_command);
+  */
   rate_pitch_int = (unsigned int)(rate_pitch * 10.0 + 8192.0);
   angle_pitch_int = (unsigned int)(angle_pitch * 10.0 + 8192.0); 
   rate_roll_int = (unsigned int)(rate_roll * 10.0 + 8192.0);
@@ -459,44 +452,44 @@ void loop()
   roll_error_int = (unsigned int)(roll_error * 10.0 + 8192.0);
   
   /*
-  tx_packet[0] = 255;
-  tx_packet[1] = (unsigned char) (rate_pitch_int >> 7);
-  tx_packet[2] = (unsigned char) (rate_pitch_int & 0x7F);
-  tx_packet[3] = (unsigned char) (angle_pitch_int >> 7);
-  tx_packet[4] = (unsigned char) (angle_pitch_int & 0x7F); 
-  tx_packet[5] = (unsigned char) (rate_roll_int >> 7);
-  tx_packet[6] = (unsigned char) (rate_roll_int & 0x7F);
-  tx_packet[7] = (unsigned char) (angle_roll_int >> 7);
-  tx_packet[8] = (unsigned char) (angle_roll_int & 0x7F);
-  tx_packet[9] = (unsigned char) (pitch_error_int >> 7);
-  tx_packet[10] = (unsigned char) (pitch_error_int & 0x7F);
-  tx_packet[11] = (unsigned char) (roll_error_int >> 7);
-  tx_packet[12] = (unsigned char) (roll_error_int & 0x7F);
-  tx_packet[13] = (unsigned char) front_command;
-  tx_packet[14] = (unsigned char) right_command;
-  tx_packet[15] = (unsigned char) rear_command;
-  tx_packet[16] = (unsigned char) left_command;
- */  /*
-  unsigned char x = 0;
+    tx_packet[0] = 255;
+    tx_packet[1] = (unsigned char) (rate_pitch_int >> 7);
+    tx_packet[2] = (unsigned char) (rate_pitch_int & 0x7F);
+    tx_packet[3] = (unsigned char) (angle_pitch_int >> 7);
+    tx_packet[4] = (unsigned char) (angle_pitch_int & 0x7F); 
+    tx_packet[5] = (unsigned char) (rate_roll_int >> 7);
+    tx_packet[6] = (unsigned char) (rate_roll_int & 0x7F);
+    tx_packet[7] = (unsigned char) (angle_roll_int >> 7);
+    tx_packet[8] = (unsigned char) (angle_roll_int & 0x7F);
+    tx_packet[9] = (unsigned char) (pitch_error_int >> 7);
+    tx_packet[10] = (unsigned char) (pitch_error_int & 0x7F);
+    tx_packet[11] = (unsigned char) (roll_error_int >> 7);
+    tx_packet[12] = (unsigned char) (roll_error_int & 0x7F);
+    tx_packet[13] = (unsigned char) front_command;
+    tx_packet[14] = (unsigned char) right_command;
+    tx_packet[15] = (unsigned char) rear_command;
+    tx_packet[16] = (unsigned char) left_command;
+  */  /*
+        unsigned char x = 0;
   
-  tx_packet[0] = x;
-  tx_packet[1] = x;
-  tx_packet[2] = x;
-  tx_packet[3] = x;
-  tx_packet[4] = x;
-  tx_packet[5] = x;
-  tx_packet[6] = x;
-  tx_packet[7] = x;
-  tx_packet[8] = x;
-  tx_packet[9] = x;
-  tx_packet[10] = x;
-  tx_packet[11] = x;
-  tx_packet[12] = x;
-  tx_packet[13] = x;
-  tx_packet[14] = x;
-  tx_packet[15] = x;
-  tx_packet[16] = x;
-  */
+        tx_packet[0] = x;
+        tx_packet[1] = x;
+        tx_packet[2] = x;
+        tx_packet[3] = x;
+        tx_packet[4] = x;
+        tx_packet[5] = x;
+        tx_packet[6] = x;
+        tx_packet[7] = x;
+        tx_packet[8] = x;
+        tx_packet[9] = x;
+        tx_packet[10] = x;
+        tx_packet[11] = x;
+        tx_packet[12] = x;
+        tx_packet[13] = x;
+        tx_packet[14] = x;
+        tx_packet[15] = x;
+        tx_packet[16] = x;
+      */
   //Serial.write(tx_packet,17);
  
   digitalWrite(13, LOW);
@@ -514,11 +507,11 @@ void rx()
   pitchBias = rx_packet[6];
   rollBias = rx_packet[7];
   
- /*
- if(special){
-  personalityEnable = 1; 
- }
- */
+  /*
+    if(special){
+    personalityEnable = 1; 
+    }
+  */
 }
 
 void readGyro()
@@ -534,7 +527,7 @@ void readGyro()
   Wire.requestFrom(GYRADDR, 6);
 
   while (Wire.available() < 6){
-      Serial.println("Gyro Wire.available() < 6");
+    Serial.println("Gyro Wire.available() < 6");
   }
 
   uint8_t xla = Wire.read();
@@ -551,33 +544,33 @@ void readGyro()
 
 void readAcc(void)
 {
-        Wire.beginTransmission(ACCADDR);
-	// assert the MSB of the address to get the accelerometer 
-	// to do slave-transmit subaddress updating.
-	Wire.write(LSM303_OUT_X_L_A | (1 << 7)); 
-	Wire.endTransmission();
-	Wire.requestFrom(ACCADDR, 6);
+  Wire.beginTransmission(ACCADDR);
+  // assert the MSB of the address to get the accelerometer 
+  // to do slave-transmit subaddress updating.
+  Wire.write(LSM303_OUT_X_L_A | (1 << 7)); 
+  Wire.endTransmission();
+  Wire.requestFrom(ACCADDR, 6);
 
-	while (Wire.available() < 6){
-          Serial.println("Acc Wire.available() < 6");
-        }
+  while (Wire.available() < 6){
+    Serial.println("Acc Wire.available() < 6");
+  }
 
-	byte xla = Wire.read();
-	byte xha = Wire.read();
-	byte yla = Wire.read();
-	byte yha = Wire.read();
-	byte zla = Wire.read();
-	byte zha = Wire.read();
+  byte xla = Wire.read();
+  byte xha = Wire.read();
+  byte yla = Wire.read();
+  byte yha = Wire.read();
+  byte zla = Wire.read();
+  byte zha = Wire.read();
 
-	accel_x = (xha << 8 | xla) >> 4;
-	accel_y = (yha << 8 | yla) >> 4;
-	accel_z = (zha << 8 | zla) >> 4;
+  accel_x = (xha << 8 | xla) >> 4;
+  accel_y = (yha << 8 | yla) >> 4;
+  accel_z = (zha << 8 | zla) >> 4;
 }
 
 void readPersonality()
 {
   
-///Wire.beginTransmission(PERSONALITYADDR);
+  ///Wire.beginTransmission(PERSONALITYADDR);
   //(0xD2 >> 1)
   
   // assert the MSB of the address to get the gyro 
@@ -590,7 +583,7 @@ void readPersonality()
 
   //Wait until two bytes were sent
   while (Wire.available() < 2){
-      Serial.println("Personality Wire.available() < 2");
+    Serial.println("Personality Wire.available() < 2");
   }
 
   uint8_t command = Wire.read();
@@ -603,32 +596,29 @@ void readPersonality()
   personalityEnable = 1;
     
   switch(command) {
-    case(0): pstop();
-    case(1): forward(magnitude); break;
-    case(2): backward(magnitude); break;
-    case(3): right(magnitude); break;
-    case(4): left(magnitude); break;
-    case(5): up(magnitude); break;
-    case(6): down(magnitude); break;
-    case(7): getIMU(); break;
-    case(8): return_control(); break;
-    default: Serial.println("Invalid command from Personality");
+  case(0): pstop();
+  case(1): forward(magnitude); break;
+  case(2): backward(magnitude); break;
+  case(3): right(magnitude); break;
+  case(4): left(magnitude); break;
+  case(5): up(magnitude); break;
+  case(6): down(magnitude); break;
+  case(7): getIMU(); break;
+  case(8): return_control(); break;
+  default: Serial.println("Invalid command from Personality");
   }
   //can have turn_right, turn_left using yaw etc.
 }
 
 void pstop(){
-
 }
 
 void forward(uint8_t magnitude){
   pitch_personality = magnitude;
-
 }
 
 void backward(uint8_t magnitude){
   pitch_personality = -magnitude;
-
 }
 
 void left(uint8_t magnitude){
@@ -666,31 +656,31 @@ void getIMU(){
 
 void return_control()
 {
-   personalityEnable = 0; 
+  personalityEnable = 0; 
 }
 
 void readMag(void)
 {
-	Wire.beginTransmission(MAG_ADDRESS);
-	Wire.write(LSM303_OUT_X_H_M);
-	Wire.endTransmission();
-	Wire.requestFrom(MAG_ADDRESS, 6);
+  Wire.beginTransmission(MAG_ADDRESS);
+  Wire.write(LSM303_OUT_X_H_M);
+  Wire.endTransmission();
+  Wire.requestFrom(MAG_ADDRESS, 6);
 
-	while (Wire.available() < 6);
+  while (Wire.available() < 6);
 
-	byte xhm = Wire.read();
-	byte xlm = Wire.read();
+  byte xhm = Wire.read();
+  byte xlm = Wire.read();
 
-	byte yhm, ylm, zhm, zlm;
+  byte yhm, ylm, zhm, zlm;
 
-        zhm = Wire.read();
-	zlm = Wire.read();
-	yhm = Wire.read();
-	ylm = Wire.read();
+  zhm = Wire.read();
+  zlm = Wire.read();
+  yhm = Wire.read();
+  ylm = Wire.read();
 
-	mag_x = (xhm << 8 | xlm);
-	mag_y = (yhm << 8 | ylm);
-	mag_z = (zhm << 8 | zlm);
+  mag_x = (xhm << 8 | xlm);
+  mag_y = (yhm << 8 | ylm);
+  mag_z = (zhm << 8 | zlm);
 }
 
 void writeGyroReg(byte reg, byte value)
