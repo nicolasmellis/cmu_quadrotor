@@ -414,15 +414,11 @@ void loop()
     rear_command = 127-pitch_personality + throttle_personality; 
     throttle_command = 127 + throttle_personality + throttle_personality; 
     //Make sure none exceed VMax (and set to 0 those below VMin?)
-   
-    if(front_command < V_MIN) { front_command = V_MIN; }
-    if(front_command > V_MAX) { front_command = V_MAX; }
-    if(rear_command < V_MIN) { rear_command = V_MIN; }
-    if(rear_command > V_MAX) { rear_command = V_MAX; }
-    if(left_command < V_MIN) { left_command = V_MIN; }
-    if(left_command > V_MAX) { left_command = V_MAX; }
-    if(right_command < V_MIN) { right_command = V_MIN; }
-    if(right_command > V_MAX) { right_command = V_MAX; }
+
+    front_command = constrain(front_command, V_MIN, V_MAX);
+    right_command = constrain(right_command, V_MIN, V_MAX);
+    left_command = constrain(left_command, V_MIN, V_MAX);
+    rear_command = constrain(rear_command, V_MIN, V_MAX);
     
   }
   
@@ -569,6 +565,9 @@ void readAcc(void)
 
 void readPersonality()
 {
+
+  // I believe that this commented section of code is only for
+  // Sending data TO the module
   
   ///Wire.beginTransmission(PERSONALITYADDR);
   //(0xD2 >> 1)

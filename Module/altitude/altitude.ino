@@ -6,9 +6,8 @@
 // Created 29 March 2006
 // This example code is in the public domain.
 
-
-
 #include <Wire.h>
+#include <module_communications.h>
 const int sensorPin = A0;
 int readings[5];
 int readingsStart = 0;
@@ -16,27 +15,25 @@ int tstep = 100;
 int height = 0;
 int setHeight = 100;
 
+#define KP 0.85 // Same as in pd_digitalIMU.ino. Test this.
+
 // Initializes serial communications (for debugging?)
 // Initializes I2C communications for communicating with
 // main arduino on quadrotor
 // Sets up variables for reading from the sensor
 void setup(){  
-  Serial.begin(9600);  
-  Wire.begin(2);                // join i2c bus with address #2  
-  Wire.onRequest(requestEvent); 
-  // register event  
-  height = analogRead(A0);
+  Serial.begin(9600);
+  init_communications(requestEvent); // register I2C event handler
+  height = analogRead(sensorPin);
   for(int i = 0; i <5; i++)  {
     readings[i] = -1;
   }
-  //sensorValue1 = analogRead(A0)
 }
 
-
 // Reads from the height sensor
-// If the sensor gets 5 valid readings, this code
+// Once the sensor has 4 or more valid readings, this code
 // drops the largest and smallest (to remove outliers?)
-void loop(){  
+void loop() {
   readings[readingsStart] = analogRead(sensorPin);
   int max = readings[readingsStart];
   int min = max;
@@ -52,7 +49,7 @@ void loop(){
         min = readings[i];
     }
   }
-  if (tally >= 4) {    
+  if (tally >= 4) {
     total -= max;
     total -= min;
     total = total/(tally-2);
@@ -64,13 +61,18 @@ void loop(){
   readingsStart = (readingsStart+1)%5;
   delay(tstep);
 }
+
 // function that executes whenever data is requested by master
 // this function is registered as an event, see setup()
-void requestEvent(){  
-  //sensorValue1 = sensorValue 0;  
-  /*sensorValue0 = analogRead(sensorPin);
-    if(sensorValue0 > fixedHeight)
-    {    if(sensorValue0-   }
-    Wire.write("hello "); // respond with message of 6 bytes                       
-    // as expected by master*/
+// Code taken from module_PID.ino
+// Proportionally controlls the power of the rotors based on
+// the difference between the target height and the current height
+void requestEvent() {
+  int height_error = setHeight - height; // No velocity variable
+  int throttle = constrain(height_error * KP, -255, 255);
+
+  if (throttle >= 0)
+    up(throttle);
+  else
+    down(-throttle);
 }
