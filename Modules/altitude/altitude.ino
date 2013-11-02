@@ -13,7 +13,7 @@ int readings[5];
 int readingsStart = 0;
 int tstep = 100;
 int height = 0;
-int setHeight = 100;
+int setHeight = 50;
 byte rQ;
 byte command;
 byte magnitude;
@@ -25,7 +25,7 @@ byte magnitude;
 // main arduino on quadrotor
 // Sets up variables for reading from the sensor
 void setup(){  
-  Serial.begin(9600);
+  Serial.begin(57600);
   Wire.begin(2);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
@@ -62,7 +62,7 @@ void loop() {
     total = total/tally;
   }
   height = total;
-  Serial.println(height);
+  //Serial.println(height);
   readingsStart = (readingsStart+1)%5;
   delay(tstep);
 }
@@ -74,16 +74,19 @@ void loop() {
 // the difference between the target height and the current height
 void requestEvent()
 {
+  //Serial.println("Got Request");
   int height_error = setHeight - height; // No velocity variable
   int throttle = constrain(height_error * KP, -255, 255);
   if (throttle >= 0)
   {
     command = 5;
     magnitude = throttle;
+    Serial.println("Should go up");
   }
   else{
     command = 6;
-    magnitude = throttle; 
+    magnitude = -throttle; 
+    Serial.println("Should go down");
   }
   if(rQ == 0x10)
     Wire.write(command);
@@ -93,5 +96,6 @@ void requestEvent()
 
 void receiveEvent(int iData)
 {
+  //Serial.println("Got data");
   rQ = Wire.read();
 }
