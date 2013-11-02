@@ -50,7 +50,13 @@ void setup()
 
   //get joypad 
   controllIO = ControllIO.getInstance(this);
-  joypad = controllIO.getDevice("Logitech Dual Action");
+
+  // For Windows:
+  // joypad = controllIO.getDevice("Logitech Dual Action");
+
+  // For Linux:
+  joypad = controllIO.getDevice("Logitech Logitech Dual Action");
+
   stick1 = joypad.getStick(0);
   stick2 = joypad.getStick(1);
   button1 = joypad.getButton(1);
